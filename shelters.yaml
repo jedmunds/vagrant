@@ -1,0 +1,10 @@
+---
+environ:
+- adora_centos:
+  - master
+  - oracle
+  - dbclient
+  - aci
+- confluence:
+  - master
+  - wiki
