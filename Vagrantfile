@@ -7,10 +7,24 @@
 # edit.
 
 require 'rbconfig'
+require 'yaml'
+require 'open-uri'
+
+if File.exist?('shelters.yaml') == false
+  File.open("", "wb") do |saved_file|
+    open("https://raw.github.com/jedmunds/vagrant/master/shelters.yaml", 'rb') do |read_file|
+      saved_file.write(read_file.read)
+    end
+  end
+end
+# Tests to see if the shelters.yaml file is in the same directory, if not it 
+# pulls down one from my github.
+  
 
 Vagrant::Config.run do |config|
 
   $environ = ARGV[1]
+  ARGV.delete_at(1)
   # Gets the argument typed after 'vagrant up', normally the machine name, and 
   # puts it into a global variable called $environ.
 
@@ -25,25 +39,25 @@ Vagrant::Config.run do |config|
   @ip_addrs = { "confluence_master" => "20",
                 "confluence_wiki" => "21",
               }
-  case $environ
 
-    when 'confluence' then
-      @vm_names = ['master', 'wiki']
-      ARGV.delete_at(1)
-    else
-      puts "ARGV not deleted - proceeding as normal"
-      @vm_names = ["#{$environ}"]
+  environs = YAML.load_file("shelters.yaml")
+  big_array = environs["environ"]
+
+  big_array.each do |small_hash|
+    small_key_array = small_hash.keys
+    if small_key_array[0] == $environ
+      small_value_array = small_hash.values
+      extracted_value_array = small_value_array[0]
+      @vm_names = extracted_value_array
+    end
   end
 
-  # This case statement tests to see if $environ matches any predefined VM
-  # environments. If it does, it deletes ARGV[1] so vagrant doesn't try to
-  # do something we don't want it to. This is where we would add any additional
-  # vagrant VM environments. They will spin up VM's no matter what, but puppet
-  # provisioning will only work if the VM is found somewhere in the vagrant.pp
-  # file.
-
-  #puts "HELLO ITS WORKING! With Environment #{$environ}"
-  # debugging comment that prints $environ ^
+  # The above is a somewhat-messy way of extracting the raw text in array form
+  # from the YAML file we load from. You should never need to edit this, I will
+  # make it more efficient and clear as I figure out how to code in ruby...
+  # But basically it loops through to find the matching environment and extracts
+  # the list of machines to spin up. Will support multiple environments 
+  # eventually.
 
     @vm_names.each do |vm|
       vm_name = vm
