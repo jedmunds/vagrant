@@ -9,10 +9,9 @@
 require 'rbconfig'
 require 'yaml'
 require 'open-uri'
-
 if File.exist?('shelters.yaml') == false
-  File.open("", "wb") do |saved_file|
-    open("https://raw.github.com/jedmunds/vagrant/master/shelters.yaml", 'rb') do |read_file|
+  File.open("shelters.yaml", "wb") do |saved_file|
+    open("http://pastebin.com/raw.php?i=BQ0Puc1Q", 'rb') do |read_file|
       saved_file.write(read_file.read)
     end
   end
