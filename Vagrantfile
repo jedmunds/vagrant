@@ -10,13 +10,15 @@ require 'rbconfig'
 require 'yaml'
 require 'open-uri'
 begin
+  begin
   if File.exist?('shelters.yaml') == false
-    File.open("shelters.yaml", "wb") do |saved_file|
-      open("http://pastebin.com/raw.php?i=BQ0Puc1Q", 'rb') do |read_file|
-        saved_file.write(read_file.read)
-      end
+    open('shelters.yaml', 'wb') do |fo|
+      fo.print open('https://raw.github.com/jedmunds/vagrant/master/shelters.yaml').read
     end
   end
+  rescue Exception => e
+  puts "There was an error when downnloading the shelters.yaml file" + e.message + "\n" +
+        e.backtrace.inspect
   # Tests to see if the shelters.yaml file is in the same directory, if not it 
   # pulls down one from my github.
     
