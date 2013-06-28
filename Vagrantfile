@@ -90,7 +90,7 @@ require 'open-uri'
       rescue Exception => e
       puts "There was an error when trying to bring up the VM's:\n" + e.message + "\n" +
             e.backtrace.inspect
-
+      end
     config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
   end
 
