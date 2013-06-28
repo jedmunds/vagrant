@@ -57,42 +57,41 @@ begin
     # But basically it loops through to find the matching environment and extracts
     # the list of machines to spin up. Will support multiple environments 
     # eventually.
-  
-      @vm_names.each do |vm|
-        vm_name = vm
-        vm_config = vm_name + "_config"
-        # the vm_name variable may be unnecessary, and can just be accessed by
-        # calling to vm. However, I had quite a fun time trying to debug that,
-        # and I would suggest leaving it there for now.
-  
-        puts "Putting the vm_name up on screen: #{vm_name}"
-        # Debug comment ^
-        # puts "Putting the vm_config up on screen : #{vm_config}"
-        # Debug comment ^
-  
-        eval %Q( # This allows us to pass in variable names in config.vm.define
-          config.vm.define :#{vm_name} do |#{vm_config}|
-  
-            # NOTE - THE BELOW LINES ARE NOT COMMENTED OUT, THEY ARE REFERENCING VARIABLES
-            #{vm_config}.vm.box = "centos6-64-puppet" 
-            #{vm_config}.vm.box_url = 'http://srsdcllhttp01/basebox/centos6-64-puppet.box'
-  
-            #{vm_config}.vm.network :hostonly, "10.99.0.#{@ip_addrs["#{$environ}_#{vm_name}"]}"
-            # I know the above looks a little awkward, but it is the most easy way to find
-            # a unique IP address for each VM.
-  
-            #{vm_config}.vm.host_name = "vagrant-puppet-#{vm_name}.pv.com"
-  
-            #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "." 
-  
-            #{vm_config}.vm.provision :puppet do |puppet|
-              puppet.manifests_path = '../edmunds_dev/manifests'
-              puppet.manifest_file = 'vagrant.pp'
-              puppet.module_path = '../edmunds_dev/modules'
-            end 
-          end
-        )
-      end
+      begin
+        @vm_names.each do |vm|
+          vm_name = vm
+          vm_config = vm_name + "_config"
+          # the vm_name variable may be unnecessary, and can just be accessed by
+          # calling to vm. However, I had quite a fun time trying to debug that,
+          # and I would suggest leaving it there for now.
+    
+          eval %Q( # This allows us to pass in variable names in config.vm.define
+            config.vm.define :#{vm_name} do |#{vm_config}|
+    
+              # NOTE - THE BELOW LINES ARE NOT COMMENTED OUT, THEY ARE REFERENCING VARIABLES
+              #{vm_config}.vm.box = "centos6-64-puppet" 
+              #{vm_config}.vm.box_url = 'http://srsdcllhttp01/basebox/centos6-64-puppet.box'
+    
+              #{vm_config}.vm.network :hostonly, "10.99.0.#{@ip_addrs["#{$environ}_#{vm_name}"]}"
+              # I know the above looks a little awkward, but it is the most easy way to find
+              # a unique IP address for each VM.
+    
+              #{vm_config}.vm.host_name = "vagrant-puppet-#{vm_name}.pv.com"
+    
+              #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "." 
+    
+              #{vm_config}.vm.provision :puppet do |puppet|
+                puppet.manifests_path = '../edmunds_dev/manifests'
+                puppet.manifest_file = 'vagrant.pp'
+                puppet.module_path = '../edmunds_dev/modules'
+              end 
+            end
+          )
+        end
+      rescue Exception => e
+      puts "There was an error when trying to bring up the VM's:\n" + e.message + "\n" +
+            e.backtrace.inspect
+
     config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
   end
 rescue Exception => e
