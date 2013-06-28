@@ -9,91 +9,94 @@
 require 'rbconfig'
 require 'yaml'
 require 'open-uri'
-if File.exist?('shelters.yaml') == false
-  File.open("shelters.yaml", "wb") do |saved_file|
-    open("http://pastebin.com/raw.php?i=BQ0Puc1Q", 'rb') do |read_file|
-      saved_file.write(read_file.read)
+begin
+  if File.exist?('shelters.yaml') == false
+    File.open("shelters.yaml", "wb") do |saved_file|
+      open("http://pastebin.com/raw.php?i=BQ0Puc1Q", 'rb') do |read_file|
+        saved_file.write(read_file.read)
+      end
     end
   end
-end
-# Tests to see if the shelters.yaml file is in the same directory, if not it 
-# pulls down one from my github.
+  # Tests to see if the shelters.yaml file is in the same directory, if not it 
+  # pulls down one from my github.
+    
   
-
-Vagrant::Config.run do |config|
-
-  $environ = ARGV[1]
-  ARGV.delete_at(1)
-  # Gets the argument typed after 'vagrant up', normally the machine name, and 
-  # puts it into a global variable called $environ.
-
-  # if ARGV[1].empty? == false
-  #   puts "HELLO WORLD"
-  # end
-  # It is possible to test the first, second, third, or umpteenth argument with
-  # the above code. All of ruby's powerful String methods are available to use.
-  # This would be the equivalent of writing a plugin or adding an additional 
-  # (albeit undocumented) command to vagrant.
-
-  @ip_addrs = { "confluence_master" => "20",
-                "confluence_wiki" => "21",
-              }
-
-  environs = YAML.load_file("shelters.yaml")
-  big_array = environs["environ"]
-
-  big_array.each do |small_hash|
-    small_key_array = small_hash.keys
-    if small_key_array[0] == $environ
-      small_value_array = small_hash.values
-      extracted_value_array = small_value_array[0]
-      @vm_names = extracted_value_array
+  Vagrant::Config.run do |config|
+  
+    $environ = ARGV[1]
+    ARGV.delete_at(1)
+    # Gets the argument typed after 'vagrant up', normally the machine name, and 
+    # puts it into a global variable called $environ.
+  
+    # if ARGV[1].empty? == false
+    #   puts "HELLO WORLD"
+    # end
+    # It is possible to test the first, second, third, or umpteenth argument with
+    # the above code. All of ruby's powerful String methods are available to use.
+    # This would be the equivalent of writing a plugin or adding an additional 
+    # (albeit undocumented) command to vagrant.
+  
+    @ip_addrs = { "confluence_master" => "20",
+                  "confluence_wiki" => "21",
+                }
+  
+    environs = YAML.load_file("shelters.yaml")
+    big_array = environs["environ"]
+  
+    big_array.each do |small_hash|
+      small_key_array = small_hash.keys
+      if small_key_array[0] == $environ
+        small_value_array = small_hash.values
+        extracted_value_array = small_value_array[0]
+        @vm_names = extracted_value_array
+      end
     end
+  
+    # The above is a somewhat-messy way of extracting the raw text in array form
+    # from the YAML file we load from. You should never need to edit this, I will
+    # make it more efficient and clear as I figure out how to code in ruby...
+    # But basically it loops through to find the matching environment and extracts
+    # the list of machines to spin up. Will support multiple environments 
+    # eventually.
+  
+      @vm_names.each do |vm|
+        vm_name = vm
+        vm_config = vm_name + "_config"
+        # the vm_name variable may be unnecessary, and can just be accessed by
+        # calling to vm. However, I had quite a fun time trying to debug that,
+        # and I would suggest leaving it there for now.
+  
+        puts "Putting the vm_name up on screen: #{vm_name}"
+        # Debug comment ^
+        # puts "Putting the vm_config up on screen : #{vm_config}"
+        # Debug comment ^
+  
+        eval %Q( # This allows us to pass in variable names in config.vm.define
+          config.vm.define :#{vm_name} do |#{vm_config}|
+  
+            # NOTE - THE BELOW LINES ARE NOT COMMENTED OUT, THEY ARE REFERENCING VARIABLES
+            #{vm_config}.vm.box = "centos6-64-puppet" 
+            #{vm_config}.vm.box_url = 'http://srsdcllhttp01/basebox/centos6-64-puppet.box'
+  
+            #{vm_config}.vm.network :hostonly, "10.99.0.#{@ip_addrs["#{$environ}_#{vm_name}"]}"
+            # I know the above looks a little awkward, but it is the most easy way to find
+            # a unique IP address for each VM.
+  
+            #{vm_config}.vm.host_name = "vagrant-puppet-#{vm_name}.pv.com"
+  
+            #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "." 
+  
+            #{vm_config}.vm.provision :puppet do |puppet|
+              puppet.manifests_path = '../edmunds_dev/manifests'
+              puppet.manifest_file = 'vagrant.pp'
+              puppet.module_path = '../edmunds_dev/modules'
+            end 
+          end
+        )
+      end
+    config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
   end
-
-  # The above is a somewhat-messy way of extracting the raw text in array form
-  # from the YAML file we load from. You should never need to edit this, I will
-  # make it more efficient and clear as I figure out how to code in ruby...
-  # But basically it loops through to find the matching environment and extracts
-  # the list of machines to spin up. Will support multiple environments 
-  # eventually.
-
-    @vm_names.each do |vm|
-      vm_name = vm
-      vm_config = vm_name + "_config"
-      # the vm_name variable may be unnecessary, and can just be accessed by
-      # calling to vm. However, I had quite a fun time trying to debug that,
-      # and I would suggest leaving it there for now.
-
-      puts "Putting the vm_name up on screen: #{vm_name}"
-      # Debug comment ^
-      # puts "Putting the vm_config up on screen : #{vm_config}"
-      # Debug comment ^
-
-      eval %Q( # This allows us to pass in variable names in config.vm.define
-        config.vm.define :#{vm_name} do |#{vm_config}|
-
-          # NOTE - THE BELOW LINES ARE NOT COMMENTED OUT, THEY ARE REFERENCING VARIABLES
-          #{vm_config}.vm.box = "centos6-64-puppet" 
-          #{vm_config}.vm.box_url = 'http://srsdcllhttp01/basebox/centos6-64-puppet.box'
-
-          #{vm_config}.vm.network :hostonly, "10.99.0.#{@ip_addrs["#{$environ}_#{vm_name}"]}"
-          # I know the above looks a little awkward, but it is the most easy way to find
-          # a unique IP address for each VM.
-
-          #{vm_config}.vm.host_name = "vagrant-puppet-#{vm_name}.pv.com"
-
-          #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "." 
-
-          #{vm_config}.vm.provision :puppet do |puppet|
-            puppet.manifests_path = '../edmunds_dev/manifests'
-            puppet.manifest_file = 'vagrant.pp'
-            puppet.module_path = '../edmunds_dev/modules'
-          end 
-        end
-      )
-    end
-  config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
+rescue Error
 end
 
 
