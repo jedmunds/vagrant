@@ -9,7 +9,6 @@
 require 'rbconfig'
 require 'yaml'
 require 'open-uri'
-begin
   begin
   if File.exist?('shelters.yaml') == false
     open('shelters.yaml', 'wb') do |fo|
@@ -94,11 +93,6 @@ begin
 
     config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
   end
-rescue Exception => e
-  puts "There was a general error:\n" + e.message + "\n" +
-        e.backtrace.inspect
-end
-
 
   # SSH private key
   # All Vagrant configuration is done here. The most common configuration
