@@ -43,15 +43,11 @@ begin
                   "confluence_wiki" => "21",
                 }
   
-    environs = YAML.load_file("shelters.yaml")
-    big_array = environs["environ"]
+    big_array = YAML.load_file("shelters.yaml")["environ"]
   
     big_array.each do |small_hash|
-      small_key_array = small_hash.keys
-      if small_key_array[0] == $environ
-        small_value_array = small_hash.values
-        extracted_value_array = small_value_array[0]
-        @vm_names = extracted_value_array
+      if small_hash.keys[0] == $environ
+        @vm_names = small_hash.values[0]
       end
     end
   
