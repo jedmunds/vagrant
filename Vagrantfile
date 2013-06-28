@@ -96,7 +96,10 @@ begin
       end
     config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
   end
-rescue Error
+rescue Exception => e
+  puts "There was a general error"
+  puts e.message
+  puts e.backtrace.inspect
 end
 
 
