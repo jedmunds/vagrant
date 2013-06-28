@@ -17,7 +17,7 @@ begin
     end
   end
   rescue Exception => e
-  puts "There was an error when downnloading the shelters.yaml file" + e.message + "\n" +
+  puts "There was an error when downnloading the shelters.yaml file:\n" + e.message + "\n" +
         e.backtrace.inspect
   end
   # Tests to see if the shelters.yaml file is in the same directory, if not it 
@@ -100,9 +100,8 @@ begin
     config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
   end
 rescue Exception => e
-  puts "There was a general error"
-  puts e.message
-  puts e.backtrace.inspect
+  puts "There was a general error:\n" + e.message + "\n" +
+        e.backtrace.inspect
 end
 
 
