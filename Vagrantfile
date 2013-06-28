@@ -19,6 +19,7 @@ begin
   rescue Exception => e
   puts "There was an error when downnloading the shelters.yaml file" + e.message + "\n" +
         e.backtrace.inspect
+  end
   # Tests to see if the shelters.yaml file is in the same directory, if not it 
   # pulls down one from my github.
     
