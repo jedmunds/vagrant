@@ -59,10 +59,16 @@ begin
     # But basically it loops through to find the matching environment and extracts
     # the list of machines to spin up. Will support multiple environments 
     # eventually.,
+
     if @vm_names == nil
       @vm_names = []
       @vm_names.push($environ)
+      puts "Warning: You are bringing up a VM not defined in the shelters.yaml file. If you
+        are missing the shelters.yaml file, you may download it on github, at
+        'https://raw.github.com/jedmunds/vagrant/master/shelters.yaml'"
     end
+    # If the name specified was not in the VM list in the shelters.yaml file, bring
+    # up a VM with the name requested.
 
       begin
         @vm_names.each do |vm|
