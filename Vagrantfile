@@ -97,8 +97,8 @@ begin
             config.vm.define :#{vm_name} do |#{vm_config}|
     
               # NOTE - THE BELOW LINES ARE NOT COMMENTED OUT, THEY ARE REFERENCING VARIABLES
-              #{vm_config}.vm.box = "centos6-64-puppet" 
-              #{vm_config}.vm.box_url = 'http://srsdcllhttp01/basebox/centos6-64-puppet.box'
+              #{vm_config}.vm.box = @global_config["default_box"]
+              #{vm_config}.vm.box_url = @global_config["default_box_url"]
     
               #{vm_config}.vm.network :hostonly, "#{@global_config["ip_network"]}21"
     
@@ -106,10 +106,10 @@ begin
     
               #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "." 
     
-              #{vm_config}.vm.provision :puppet do |puppet|
-                puppet.manifests_path = '/Users/Jordan/edmunds_dev/manifests'
-                puppet.manifest_file = 'vagrant.pp'
-                puppet.module_path = '/Users/Jordan/edmunds_dev/modules/'
+              #{vm_config}.vm.provision :#{@global_config["default_provisioner"]} do |#{@global_config["default_provisioner"]}|
+                #{@global_config["default_provisioner"]}.manifests_path = @global_config["default_manifests_path"]
+                #{@global_config["default_provisioner"]}.manifest_file = @global_config["default_manifests_file"]
+                #{@global_config["default_provisioner"]}.module_path = @global_config["default_module_path"]
               end 
             end
           )

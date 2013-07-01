@@ -1,7 +1,7 @@
 ---
 environ:
 - global_config:
-  - default_box:                "centos-6-64-puppet"
+  - default_box:                "centos6-64-puppet"
   - default_box_url:            "http://srsdcllhttp01/basebox/centos6-64-puppet.box"
   - ip_network:                 "10.99.0."
   - default_hostname:           "vagrant-puppet-"
