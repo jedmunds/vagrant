@@ -30,8 +30,11 @@ end
 begin 
   Vagrant::Config.run do |config|
   
-    $environ = ARGV[1]
-    ARGV.delete_at(1)
+    if ARGV[0] == 'up' or ARGV[0] == 'destroy' or ARGV[0] == 'provision' or ARGV[0] == 'halt' or
+       ARGV[0] == 'resume' or ARGV[0] == 'reload' or ARGV[0] == 'ssh'
+      $environ = ARGV[1]
+      ARGV.delete_at(1)
+    end
     # Gets the argument typed after 'vagrant up', normally the machine name, and 
     # puts it into a global variable called $environ.
   
@@ -61,10 +64,15 @@ begin
 
     if @vm_names == nil
       @vm_names = []
-      @vm_names.push($environ)
-      puts "Warning: You are bringing up a VM not defined in the shelters.yaml file. If you
-        are missing the shelters.yaml file, you may download it on github, at
-        'https://raw.github.com/jedmunds/vagrant/master/shelters.yaml'"
+      if $environ == nil      # if a different command is being run, $environ still needs a value
+        $environ = 'default'
+      end
+      @vm_names.push($environ) # makes sure our Vagrantfile doesn't interfere with other things
+      if ARGV[0] == 'up'
+        puts "Warning: You are bringing up a VM not defined in the shelters.yaml file. If you
+          are missing the shelters.yaml file, you may download it on github, at
+          'https://raw.github.com/jedmunds/vagrant/master/shelters.yaml'"
+      end
     end
     # If the name specified was not in the VM list in the shelters.yaml file, bring
     # up a VM with the name requested.
