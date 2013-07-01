@@ -26,7 +26,7 @@ rescue Exception => e
 end
   # Tests to see if the shelters.yaml file is in the same directory, if not it 
   # pulls down one from my github.
-    
+@global_config = {}   
 begin 
   Vagrant::Config.run do |config|
   
@@ -46,11 +46,19 @@ begin
     # This would be the equivalent of writing a plugin or adding an additional 
     # (albeit undocumented) command to vagrant.
   
-    @ip_addrs = { "confluence_master" => "20",
-                  "confluence_wiki" => "21",
-                }
-  
-    YAML.load_file("shelters.yaml")["environ"].each do |small_hash|
+    y = YAML.load_file("shelters.yaml")  
+
+    y["environ"].each do |small_hash|
+      if small_hash.keys[0] == "global_config"
+        global_conf_array = y["environ"][0]["global_config"]
+        global_conf_array.each do |config|
+          @global_config["#{config.keys[0]}"] = config.values[0]
+        end
+      end
+    # This writes the global variables defined in our config.yaml file, we can load
+    # absolutely anything we want. In this case, I believe, there are about 6 different
+    # variables loaded
+
       if small_hash.keys[0] == $environ
         @vm_names = small_hash.values[0]
       end
@@ -92,18 +100,16 @@ begin
               #{vm_config}.vm.box = "centos6-64-puppet" 
               #{vm_config}.vm.box_url = 'http://srsdcllhttp01/basebox/centos6-64-puppet.box'
     
-              #{vm_config}.vm.network :hostonly, "10.99.0.#{@ip_addrs["#{$environ}_#{vm_name}"]}"
-              # I know the above looks a little awkward, but it is the most easy way to find
-              # a unique IP address for each VM.
+              #{vm_config}.vm.network :hostonly, "#{@global_config["ip_network"]}21"
     
-              #{vm_config}.vm.host_name = "vagrant-puppet-#{vm_name}.pv.com"
+              #{vm_config}.vm.host_name = "#{@global_config["default_hostname"]}#{vm_name}#{@global_config["default_network"]}"
     
               #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "." 
     
               #{vm_config}.vm.provision :puppet do |puppet|
                 puppet.manifests_path = '/Users/Jordan/edmunds_dev/manifests'
                 puppet.manifest_file = 'vagrant.pp'
-                puppet.module_path = '/Users/Jordan/edmunds_dev/modules'
+                puppet.module_path = '/Users/Jordan/edmunds_dev/modules/'
               end 
             end
           )

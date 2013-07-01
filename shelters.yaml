@@ -1,5 +1,15 @@
 ---
 environ:
+- global_config:
+  - default_box:                "centos-6-64-puppet"
+  - default_box_url:            "http://srsdcllhttp01/basebox/centos6-64-puppet.box"
+  - ip_network:                 "10.99.0."
+  - default_hostname:           "vagrant-puppet-"
+  - default_hostname_network:   ".pv.com"
+  - default_provisioner:        "puppet"
+  - default_manifests_path:     "/Users/Jordan/edmunds_dev/manifests/"
+  - default_manifests_file:     "vagrant.pp"
+  - default_module_path:        "/Users/Jordan/edmunds_dev/modules/"
 - adora_centos:
   - master
   - oracle
