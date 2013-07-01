@@ -9,20 +9,26 @@
 require 'rbconfig'
 require 'yaml'
 require 'open-uri'
-  begin
-  if File.exist?('shelters.yaml') == false
-    open('shelters.yaml', 'wb') do |fo|
-      fo.print open('https://raw.github.com/jedmunds/vagrant/master/shelters.yaml').read
-    end
-  end
-  rescue Exception => e
+
+begin
+# I don't see the below working in a system-independent user-oblivious sort of way anytime soon,
+# will just force people to download the YAML file with the Vagrantfile
+
+#  if File.exist?('shelters.yaml') == false or File.read('shelters.yaml') == ""
+#    File.open('shelters.yaml', 'wb') do |saved_file|
+#      open("http://raw.github.com/jedmunds/vagrant/master/shelters.yaml", 'rb') do |read_file|
+#        saved_file.write(read_file.read)
+#      end
+#    end
+#  end
+rescue Exception => e
   puts "There was an error when downnloading the shelters.yaml file:\n" + e.message + "\n" +
         e.backtrace.inspect
-  end
+end
   # Tests to see if the shelters.yaml file is in the same directory, if not it 
   # pulls down one from my github.
     
-  
+begin 
   Vagrant::Config.run do |config|
   
     $environ = ARGV[1]
@@ -42,20 +48,22 @@ require 'open-uri'
                   "confluence_wiki" => "21",
                 }
   
-    big_array = YAML.load_file("shelters.yaml")["environ"]
-  
-    big_array.each do |small_hash|
+    YAML.load_file("shelters.yaml")["environ"].each do |small_hash|
       if small_hash.keys[0] == $environ
         @vm_names = small_hash.values[0]
       end
     end
-  
     # The above is a somewhat-messy way of extracting the raw text in array form
     # from the YAML file we load from. You should never need to edit this, I will
     # make it more efficient and clear as I figure out how to code in ruby...
     # But basically it loops through to find the matching environment and extracts
     # the list of machines to spin up. Will support multiple environments 
-    # eventually.
+    # eventually.,
+    if @vm_names == nil
+      @vm_names = []
+      @vm_names.push($environ)
+    end
+
       begin
         @vm_names.each do |vm|
           vm_name = vm
@@ -80,9 +88,9 @@ require 'open-uri'
               #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "." 
     
               #{vm_config}.vm.provision :puppet do |puppet|
-                puppet.manifests_path = '../edmunds_dev/manifests'
+                puppet.manifests_path = '/Users/Jordan/edmunds_dev/manifests'
                 puppet.manifest_file = 'vagrant.pp'
-                puppet.module_path = '../edmunds_dev/modules'
+                puppet.module_path = '/Users/Jordan/edmunds_dev/modules'
               end 
             end
           )
@@ -93,6 +101,10 @@ require 'open-uri'
       end
     config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
   end
+rescue Exception => e
+  puts "There was an error somewhere in Vagrant::Config" + e.message + "\n" +
+        e.backtrace.inspect
+end
 
   # SSH private key
   # All Vagrant configuration is done here. The most common configuration
