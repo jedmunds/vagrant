@@ -6,7 +6,6 @@
 # this Vagrantfile as much as I can, hopefully it should be easy enough to 
 # edit.
 
-require 'rbconfig'
 require 'yaml'
 require 'open-uri'
 
