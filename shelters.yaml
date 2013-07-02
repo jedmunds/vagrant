@@ -15,8 +15,10 @@ environ:
   - manifests_path:         "/Users/Jordan/edmunds_dev/manifests/"
   - manifests_file:         "vagrant.pp"
   - module_path:            "/Users/Jordan/edmunds_dev/modules/"
-  - network_type:           "hostonly"
+  - network_type:           "private_network"
   - private_key_path:       "/Users/Jordan/edmunds_dev/vagrantpriv"
+  - sync_folder_host:       "/Users/Jordan/edmunds_dev/"
+  - sync_folder_guest:      "/home/vagrant/puppet_bootstrap/"
 - adora_centos:
   - master
   - oracle

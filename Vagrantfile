@@ -49,6 +49,7 @@ Vagrant.configure("2") do |config|
       # core of the 'shelters' concept. Three lines of code. I like it.
 
     end
+    $gc = $global_config
 
     if $vm_names == nil
       $vm_names = []
@@ -65,11 +66,25 @@ Vagrant.configure("2") do |config|
     begin
     
       # For though I walk in the shadow of not being able to mutilate the Vagrantfile
-      # in any way I Want, I will fear no Evil, for Google is with me. It's search 
+      # in any way I Want, I will fear no Failure, for Google is with me. It's search 
       # feature and ability to find anything I need, they comfort me.
+      
+      puts "The VM names are " + $vm_names.to_s
 
-      config.vm.define :vm do |vm_config|
-        vm_config.vm.box = "centos6-64-puppet"
+      $vm_names.each do |vm|
+
+        config.vm.define vm.to_sym do |vm_config|
+          vm_config.vm.box = $gc["box"]
+          vm_config.vm.box_url = $gc["box_url"]
+
+          vm_config.vm.network $gc["network_type"], ip: "#{$gc["ip_network"]}21"
+          vm_config.vm.hostname = "#{$gc["hostname"]}#{vm}#{$gc["network"]}"
+          vm_config.vm.synced_folder $gc["sync_folder_host"], "/src/website"
+
+
+          vm_config.vm.provider :aws do |aws, override|
+          end
+        end
       end
 
     rescue Exception => ex
