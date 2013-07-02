@@ -21,9 +21,9 @@ environ:
   - sync_folder_guest:      "/home/vagrant/puppet_bootstrap/"
 - adora_centos:
   - master:
-    - ip: 10
+    - ip:         "11"
   - oracle:
-    - ip: 10
+    - ip:         "12"
 - confluence:
-  - master:
-  - wiki:
+  - master:       "13"
+  - wiki:         "14"

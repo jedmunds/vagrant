@@ -29,6 +29,7 @@ Vagrant.configure("2") do |config|
 
     $global_config = {}
     $vm_names = []
+    $vm_ips = {}
 
     y = YAML.load_file("shelters.yaml")
 
@@ -44,13 +45,11 @@ Vagrant.configure("2") do |config|
       # from the "global_defaults" key
 
       if small_hash.keys[0] == $environ     # ie. "confluence"
-        if small_hash.values[0][0].class == String
-          $vm_names = small_hash.values[0]
-        elsif small_hash.values[0][0].class == Hash
+        if small_hash.values[0][0].class == Hash
           small_hash.values[0].each do |os_name|
             $vm_names.push(os_name.keys[0])
+            $vm_ips[os_name.keys[0]] = os_name.values[0]
           end
-          puts "YAYYYYYYYYY"
         end
       end
       # Get the names of the virtual machines we want to bring up. This is the
@@ -59,9 +58,9 @@ Vagrant.configure("2") do |config|
     end
     $gc = $global_config
 
-    puts "The VM names are " + $vm_names.to_s
     if $vm_names == []
       $vm_names.push($environ)
+      $vm_ips[$environ] = '10'
       if ARGV[0] == 'up'
         puts "WARNING: You are bringing up a VM not defined in the shelters.yaml
         file. The box will continue to load, but provisioning will not be applied
@@ -83,7 +82,7 @@ Vagrant.configure("2") do |config|
           vm_config.vm.box = $gc["box"]
           vm_config.vm.box_url = $gc["box_url"]
 
-          vm_config.vm.network $gc["network_type"].to_sym, ip: "#{$gc["ip_network"]}21"
+          vm_config.vm.network $gc["network_type"].to_sym, ip: "#{$gc["ip_network"]}#{$vm_ips[vm]}"
           vm_config.vm.hostname = "#{$gc["hostname"]}#{vm}#{$gc["network"]}"
           vm_config.vm.synced_folder $gc["sync_folder_host"], $gc["sync_folder_guest"]
 
@@ -99,6 +98,14 @@ Vagrant.configure("2") do |config|
 
           if $use_aws == true
             vm_config.vm.provider :aws do |aws, override|
+              aws.access_key_id = $gc["aws_access_key"]
+              aws.secret_access_key = $gc["aws_secret_access_key"]
+              aws.keypair_name = $gc["aws_keypair_name"]
+
+              aws.ami = $gc["aws_ami"]
+
+              override.ssh.username = $gc["aws_username"]
+              override.ssh.private_key_path = $gc["aws_private_key_path"]
             end
           end
         end
