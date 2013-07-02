@@ -28,6 +28,7 @@ Vagrant.configure("2") do |config|
     # 'default'
 
     $global_config = {}
+    $vm_names = []
 
     y = YAML.load_file("shelters.yaml")
 
@@ -42,8 +43,15 @@ Vagrant.configure("2") do |config|
       # This should not need to be modified, it will pull everything
       # from the "global_defaults" key
 
-      if small_hash.keys[0] == $environ
-        $vm_names = small_hash.values[0]
+      if small_hash.keys[0] == $environ     # ie. "confluence"
+        if small_hash.values[0][0].class == String
+          $vm_names = small_hash.values[0]
+        elsif small_hash.values[0][0].class == Hash
+          small_hash.values[0].each do |os_name|
+            $vm_names.push(os_name.keys[0])
+          end
+          puts "YAYYYYYYYYY"
+        end
       end
       # Get the names of the virtual machines we want to bring up. This is the
       # core of the 'shelters' concept. Three lines of code. I like it.
@@ -51,8 +59,8 @@ Vagrant.configure("2") do |config|
     end
     $gc = $global_config
 
-    if $vm_names == nil
-      $vm_names = []
+    puts "The VM names are " + $vm_names.to_s
+    if $vm_names == []
       $vm_names.push($environ)
       if ARGV[0] == 'up'
         puts "WARNING: You are bringing up a VM not defined in the shelters.yaml
@@ -69,20 +77,29 @@ Vagrant.configure("2") do |config|
       # in any way I Want, I will fear no Failure, for Google is with me. It's search 
       # feature and ability to find anything I need, they comfort me.
       
-      puts "The VM names are " + $vm_names.to_s
-
       $vm_names.each do |vm|
 
         config.vm.define vm.to_sym do |vm_config|
           vm_config.vm.box = $gc["box"]
           vm_config.vm.box_url = $gc["box_url"]
 
-          vm_config.vm.network $gc["network_type"], ip: "#{$gc["ip_network"]}21"
+          vm_config.vm.network $gc["network_type"].to_sym, ip: "#{$gc["ip_network"]}21"
           vm_config.vm.hostname = "#{$gc["hostname"]}#{vm}#{$gc["network"]}"
-          vm_config.vm.synced_folder $gc["sync_folder_host"], "/src/website"
+          vm_config.vm.synced_folder $gc["sync_folder_host"], $gc["sync_folder_guest"]
 
+          vm_config.vm.provision :puppet do |puppet|
+            puppet.manifests_path = $gc["manifests_path"]
+            puppet.manifest_file = $gc["manifests_file"]
+            puppet.module_path = $gc["module_path"]
+          end
+          
+          # Note on this - setting "provisioner in the YAML file and then using 
+          # gc["provisioner"] should work if we want to use things other than puppet,
+          # I'm just having issues with it
 
-          vm_config.vm.provider :aws do |aws, override|
+          if $use_aws == true
+            vm_config.vm.provider :aws do |aws, override|
+            end
           end
         end
       end
@@ -92,10 +109,10 @@ Vagrant.configure("2") do |config|
       is below\n" + e.message + e.backtrace.inspect
     end
 
+  config.ssh.private_key_path = $gc["private_key_path"]
 
   rescue Exception => e
-    puts "There was an error in the program." + e.message + "\n" + 
-          e.backtrace.inspect
+    puts "There was an error in the program."
   end
 end
 
