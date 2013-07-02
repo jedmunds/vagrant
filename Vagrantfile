@@ -3,7 +3,7 @@
 # a set of predefined machine environments, if the one you specify does not
 # exist, it sets it up. For instance, running vagrant up confluence brings up
 # two VM's, the confluence master, and the 'wiki' box. I will try to document
-# this Vagrantfile as much as I can, hopefully it should be easy enough to 
+# this Vagrantfile as much as I can, hopefully it should be easy enough to
 # edit.
 
 require 'yaml'
@@ -24,39 +24,41 @@ rescue Exception => e
   puts "There was an error when downnloading the shelters.yaml file:\n" + e.message + "\n" +
         e.backtrace.inspect
 end
-  # Tests to see if the shelters.yaml file is in the same directory, if not it 
+  # Tests to see if the shelters.yaml file is in the same directory, if not it
   # pulls down one from my github.
-@global_config = {}   
-begin 
-  Vagrant::Config.run do |config|
-  
+
+@global_config = {}
+# The global configurations hash that contains all our external global configurations.
+
+begin
+  Vagrant.configure("1") do |config|
+ 
     if ARGV[0] == 'up' or ARGV[0] == 'destroy' or ARGV[0] == 'provision' or ARGV[0] == 'halt' or
        ARGV[0] == 'resume' or ARGV[0] == 'reload' or ARGV[0] == 'ssh'
       $environ = ARGV[1]
+      ARGV.each do |argument|
+        if argument == "--provider=aws"
+        $use_aws = true
+        end
+      end
       ARGV.delete_at(1)
     end
-    # Gets the argument typed after 'vagrant up', normally the machine name, and 
+    # Gets the argument typed after 'vagrant up', normally the machine name, and
     # puts it into a global variable called $environ.
-  
-    # if ARGV[1].empty? == false
-    #   puts "HELLO WORLD"
-    # end
-    # It is possible to test the first, second, third, or umpteenth argument with
-    # the above code. All of ruby's powerful String methods are available to use.
-    # This would be the equivalent of writing a plugin or adding an additional 
-    # (albeit undocumented) command to vagrant.
-  
-    y = YAML.load_file("shelters.yaml")  
+ 
+    if $environ == nil then $environ = 'default' end
+
+    y = YAML.load_file("shelters.yaml") 
 
     y["environ"].each do |small_hash|
-      if small_hash.keys[0] == "global_config"
-        global_conf_array = y["environ"][0]["global_config"]
+      if small_hash.keys[0] == "global_defaults"
+        global_conf_array = y["environ"][0]["global_defaults"]
         global_conf_array.each do |config|
           @global_config["#{config.keys[0]}"] = config.values[0]
         end
       end
     # This writes the global variables defined in our config.yaml file, we can load
-    # absolutely anything we want. In this case, I believe, there are about 6 different
+    # absolutely anything we want. In this case, I believe, there are about 10 different
     # variables loaded
 
       if small_hash.keys[0] == $environ
@@ -67,17 +69,14 @@ begin
     # from the YAML file we load from. You should never need to edit this, I will
     # make it more efficient and clear as I figure out how to code in ruby...
     # But basically it loops through to find the matching environment and extracts
-    # the list of machines to spin up. Will support multiple environments 
+    # the list of machines to spin up. Will support multiple environments
     # eventually.,
 
     if @vm_names == nil
       @vm_names = []
-      if $environ == nil      # if a different command is being run, $environ still needs a value
-        $environ = 'default'
-      end
       @vm_names.push($environ) # makes sure our Vagrantfile doesn't interfere with other things
       if ARGV[0] == 'up'
-        puts "Warning: You are bringing up a VM not defined in the shelters.yaml file. If you
+        puts "WARNING: You are bringing up a VM not defined in the shelters.yaml file. If you
           are missing the shelters.yaml file, you may download it on github, at
           'https://raw.github.com/jedmunds/vagrant/master/shelters.yaml'"
       end
@@ -87,30 +86,36 @@ begin
 
       begin
         @vm_names.each do |vm|
-          vm_name = vm
-          vm_config = vm_name + "_config"
-          # the vm_name variable may be unnecessary, and can just be accessed by
-          # calling to vm. However, I had quite a fun time trying to debug that,
-          # and I would suggest leaving it there for now.
-    
+          vm_config = vm + "_config"
+   
           eval %Q( # This allows us to pass in variable names in config.vm.define
-            config.vm.define :#{vm_name} do |#{vm_config}|
-    
+            config.vm.define :#{vm} do |#{vm_config}|
+   
               # NOTE - THE BELOW LINES ARE NOT COMMENTED OUT, THEY ARE REFERENCING VARIABLES
-              #{vm_config}.vm.box = @global_config["default_box"]
-              #{vm_config}.vm.box_url = @global_config["default_box_url"]
-    
-              #{vm_config}.vm.network :hostonly, "#{@global_config["ip_network"]}21"
-    
-              #{vm_config}.vm.host_name = "#{@global_config["default_hostname"]}#{vm_name}#{@global_config["default_network"]}"
-    
-              #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "." 
-    
-              #{vm_config}.vm.provision :#{@global_config["default_provisioner"]} do |#{@global_config["default_provisioner"]}|
-                #{@global_config["default_provisioner"]}.manifests_path = @global_config["default_manifests_path"]
-                #{@global_config["default_provisioner"]}.manifest_file = @global_config["default_manifests_file"]
-                #{@global_config["default_provisioner"]}.module_path = @global_config["default_module_path"]
-              end 
+              #{vm_config}.vm.box = @global_config["box"]
+              #{vm_config}.vm.box_url = @global_config["box_url"]
+   
+              #{vm_config}.vm.network :#{@global_config["network_type"]}, "#{@global_config["ip_network"]}21"
+              #{vm_config}.vm.host_name = "#{@global_config["hostname"]}#{vm}#{@global_config["network"]}"
+              #{vm_config}.vm.share_folder "puppet", "/home/vagrant/puppet_bootstrap", "."
+   
+              #{vm_config}.vm.provision :#{@global_config["provisioner"]} do |#{@global_config["provisioner"]}|
+                #{@global_config["provisioner"]}.manifests_path = @global_config["manifests_path"]
+                #{@global_config["provisioner"]}.manifest_file = @global_config["manifests_file"]
+                #{@global_config["provisioner"]}.module_path = @global_config["module_path"]
+              end
+              if $use_aws == true
+                #{vm_config}.vm.provider :aws do |aws, override|
+                  aws.access_key_id = @global_config["aws_access_key_id"]
+                  aws.secret_access_key = @global_config["aws_secret_access_key"]
+                  aws.keypair_name = @global_config["aws_keypair_name"]
+
+                  aws.ami = @global_config["aws_ami"]
+
+                  override.ssh.username = @global_config["aws_username"]
+                  override.ssh.private_key_path = @global_config["aws_private_key_path"]
+                end
+              end
             end
           )
         end
@@ -118,7 +123,7 @@ begin
       puts "There was an error when trying to bring up the VM's:\n" + e.message + "\n" +
             e.backtrace.inspect
       end
-    config.ssh.private_key_path="~/edmunds_dev/vagrantpriv"
+    config.ssh.private_key_path=@global_config["private_key_path"]
   end
 rescue Exception => e
   puts "There was an error somewhere in Vagrant::Config" + e.message + "\n" +
@@ -184,7 +189,7 @@ end
   # end
 
   # Enable provisioning with chef solo, specifying a cookbooks path, roles
-  # path, and data_bags path (all relative to this Vagrantfile), and adding 
+  # path, and data_bags path (all relative to this Vagrantfile), and adding
   # some recipes and/or roles.
   #
   # config.vm.provision :chef_solo do |chef|

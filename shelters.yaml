@@ -1,15 +1,22 @@
 ---
 environ:
-- global_config:
-  - default_box:                "centos6-64-puppet"
-  - default_box_url:            "http://srsdcllhttp01/basebox/centos6-64-puppet.box"
-  - ip_network:                 "10.99.0."
-  - default_hostname:           "vagrant-puppet-"
-  - default_hostname_network:   ".pv.com"
-  - default_provisioner:        "puppet"
-  - default_manifests_path:     "/Users/Jordan/edmunds_dev/manifests/"
-  - default_manifests_file:     "vagrant.pp"
-  - default_module_path:        "/Users/Jordan/edmunds_dev/modules/"
+- global_defaults:
+  - aws_access_key_id:      "ACCESS KEY ID"
+  - aws_ami:                "ami-xxxxxx"
+  - aws_private_key_path:   "PATH TO PRIVATE KEY"
+  - aws_secret_access_key:  "SECRET ACCESS KEY"
+  - aws_username:           "ec2-user"
+  - box:                    "centos6-64-puppet"
+  - box_url:                "http://srsdcllhttp01/basebox/centos6-64-puppet.box"
+  - ip_network:             "10.99.0."
+  - hostname:               "vagrant-puppet-"
+  - hostname_network:       ".pv.com"
+  - provisioner:            "puppet"
+  - manifests_path:         "/Users/Jordan/edmunds_dev/manifests/"
+  - manifests_file:         "vagrant.pp"
+  - module_path:            "/Users/Jordan/edmunds_dev/modules/"
+  - network_type:           "hostonly"
+  - private_key_path:       "/Users/Jordan/edmunds_dev/vagrantpriv"
 - adora_centos:
   - master
   - oracle
