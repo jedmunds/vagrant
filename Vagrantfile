@@ -98,11 +98,15 @@ Vagrant.configure("2") do |config|
 
           if $use_aws == true
             vm_config.vm.provider :aws do |aws, override|
-              aws.access_key_id = $gc["aws_access_key"]
+              aws.access_key_id = $gc["aws_access_key_id"]
               aws.secret_access_key = $gc["aws_secret_access_key"]
               aws.keypair_name = $gc["aws_keypair_name"]
 
               aws.ami = $gc["aws_ami"]
+              
+              aws.region = $gc["aws_region"]
+
+              aws.instance_type = $gc["aws_instance_type"]
 
               override.ssh.username = $gc["aws_username"]
               override.ssh.private_key_path = $gc["aws_private_key_path"]

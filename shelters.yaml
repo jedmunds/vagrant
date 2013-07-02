@@ -2,8 +2,11 @@
 environ:
 - global_defaults:
   - aws_access_key_id:      "ACCESS KEY ID"
-  - aws_ami:                "ami-xxxxxx"
-  - aws_private_key_path:   "PATH TO PRIVATE KEY"
+  - aws_ami:                "ami-5344d263"
+  - aws_instance_type:      "t1.micro"
+  - aws_keypair_name:       "vagrant-keypair"
+  - aws_private_key_path:   "/Users/Jordan/Downloads/keys/vagrant-keypair.pem"
+  - aws_region:             "us-west-2"
   - aws_secret_access_key:  "SECRET ACCESS KEY"
   - aws_username:           "ec2-user"
   - box:                    "centos6-64-puppet"
