@@ -13,10 +13,19 @@ Vagrant.configure("2") do |config|
   # please see the online documentation at vagrantup.com.
     if ARGV[0] == 'up' or ARGV[0] == 'destroy' or ARGV[0] == 'provision' or
       ARGV[0] == 'halt' or ARGV[0] == 'resume' or ARGV[0] == 'reload' or
-      ARGV[0] == 'ssh'
+      ARGV[0] == 'ssh' or ARGV[0] == 'status'
+      if ARGV[0] == 'status' and ARGV[1] == nil
+        ARGV[1] = 'all'
+      end
+      # If they run 'vagrant status', they mean 'vagrant status all' for this
+      # Vagrantfile. 
+
       $environ = ARGV[1]
       ARGV.each do |argument|
         if argument == "--provider=aws"
+          if ARGV[0] != "up"
+            ARGV.delete_at(1)
+          end
           $use_aws = true
         end
       end
@@ -31,36 +40,61 @@ Vagrant.configure("2") do |config|
     $vm_names = []
     $vm_ips = {}
 
-    y = YAML.load_file("shelters.yaml")
+    begin
+      y = YAML.load_file("shelters.yaml")
 
-    y["environ"].each do |small_hash|
-      if small_hash.keys[0] == "global_defaults"
-        global_conf_array = y["environ"][0]["global_defaults"]
-        global_conf_array.each do |gconf|
-          $global_config[gconf.keys[0]] = gconf.values[0]
-        end
-      end
-      # Set the global configurations based on the external YAML file.
-      # This should not need to be modified, it will pull everything
-      # from the "global_defaults" key
-
-      if small_hash.keys[0] == $environ     # ie. "confluence"
-        if small_hash.values[0][0].class == Hash
-          small_hash.values[0].each do |os_name|
-            $vm_names.push(os_name.keys[0])
-            $vm_ips[os_name.keys[0]] = os_name.values[0]
+      y["environ"].each do |small_hash|
+        if small_hash.keys[0] == "global_defaults"
+          global_conf_array = y["environ"][0]["global_defaults"]
+          global_conf_array.each do |gconf|
+            $global_config[gconf.keys[0]] = gconf.values[0]
           end
         end
-      end
-      # Get the names of the virtual machines we want to bring up. This is the
-      # core of the 'shelters' concept. Three lines of code. I like it.
+        # Set the global configurations based on the external YAML file.
+        # This should not need to be modified, it will pull everything
+        # from the "global_defaults" key
+
+        if small_hash.keys[0] == $environ     # ie. "confluence"
+          if small_hash.values[0][0].class == Hash
+            small_hash.values[0].each do |os_name|
+              $vm_names.push(os_name.keys[0])
+              $vm_ips[os_name.keys[0]] = os_name.values[0][0]["ip"]
+            end
+          end
+        end
+        # Get the names of the virtual machines we want to bring up. This is the
+        # core of the 'shelters' concept. Also assign the ip's we are going to use
+        # based on the YAML configuration.
+
+        if $environ == 'all' and small_hash.keys[0] != "global_defaults"
+          small_hash.values[0].each do |os_name|
+            $vm_names.push(os_name.keys[0])
+            $vm_ips[os_name.keys[0]] = os_name.values[0][0]["ip"]
+          end
+        end
+        # If the user specified 'vagrant something all', give them all the VM's they
+        # could ever want. (Every VM in the YAML file)
 
     end
+
+    rescue Exception => ey
+      puts "There was an error loading information from the YAML file.\n\n" + 
+      ey.message + "\n\n" + ey.backtrace.inspect
+    end
+
     $gc = $global_config
 
     if $vm_names == []
-      $vm_names.push($environ)
-      $vm_ips[$environ] = '10'
+      if $environ == nil
+        $vm_names.push('default')
+      else
+        if $environ.include? '_'
+          puts "WARNING: You cannot include an '_' in VM names. Changing to '-'."
+          $environ = $environ.gsub("_", "-")
+        end
+        $vm_names.push($environ)
+        $vm_ips[$environ] = '10'
+      end
       if ARGV[0] == 'up'
         puts "WARNING: You are bringing up a VM not defined in the shelters.yaml
         file. The box will continue to load, but provisioning will not be applied
@@ -107,6 +141,11 @@ Vagrant.configure("2") do |config|
               aws.region = $gc["aws_region"]
 
               aws.instance_type = $gc["aws_instance_type"]
+
+              aws.security_groups = [$gc["aws_security_groups"]]
+
+              aws.user_data = "#!/bin/bash\necho 'Defaults:ec2-user !requiretty' > /etc/sudoers.d/999-vagrant-cloud-init-requiretty && chmod 440 /etc/sudoers.d/999-vagrant-cloud-init-requiretty\n"
+              # The above is a somewhat-sketchy workaround for rsyncing folders in vagrant.
 
               override.ssh.username = $gc["aws_username"]
               override.ssh.private_key_path = $gc["aws_private_key_path"]
