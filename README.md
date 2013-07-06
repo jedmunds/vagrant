@@ -47,3 +47,6 @@ No, with such heavy parameterization the Vagrantfile needs the shelters.yaml fil
 
 <strong>What's with all the weird-looking code in your Vagrantfile?</strong>
 Vagrantfiles are written in ruby, and all the weird-looking code is just 'extra' ruby.
+
+<strong>Why should I use your Vagrantfile? I'll just write my own!</strong>
+Please do! Playing with vagrant is fun, and I don't intend to deprive anyone of the opportunity. However, for those that want a working, cross-platform, scalable solution, I suggest at least skimming over my Vagrantfile.
