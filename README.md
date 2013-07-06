@@ -1,5 +1,7 @@
-vagrant
+Vagrant?
 =======
+
+Vagrant is a 'wrapper' for many different virtual machine providers, in other words, it is a single solution to spin up virtual machines from the command line with programs like virtualbox, or cloud-based services like amazon's EC2 or VMWare's vSphere. Easily bootstrap and provision machines with a single command! Please, developers, make your life easy. Check it out! http://vagrantup.com. 
 
 Welcome to a new way of using vagrant, flexible and fully parameterized.
 
