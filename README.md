@@ -41,7 +41,7 @@ instructions below.<br/>
 </ol>
 
 <h3>Windows Users:</h3>
-Note: This is not for the feint of heart, as you may encounter one or two (or seven) errors along the way. <br/>
+Note: This is not for the faint of heart, as you may encounter one or two (or seven) errors along the way. <br/>
 <ol>
 <li>Install VirtualBox: <a href="http://download.virtualbox.org/virtualbox/4.2.12/VirtualBox-4.2.12-84980-Win.exe">VirtualBox-4.2.12.exe</a> No other version will work!<br/></li>
 <li>Install ruby: <a href="http://rubyforge.org/frs/download.php/76956/rubyinstaller-2.0.0-p195-x64.exe">Ruby 2.0.0 (x64)</a> and select 'add ruby binaries to PATH.</li>
