@@ -60,6 +60,7 @@ Note: This is not for the feint of heart, as you may encounter one or two (or se
 <li>If you want to bring up machines with AWS, append --provider=aws to your 'vagrant someCommand someEnvironment' commands, and it should just 'work'.<br/>
 <code>vagrant up confluence --provider=aws</code><br/></li>
 </ol>
+<h4>Windows Debugging</h4>
 
 <h2>FAQ</h2>
 
