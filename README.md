@@ -40,6 +40,28 @@ instructions below.<br/>
 <code>vagrant up confluence --provider=aws</code><br/></li>
 </ol>
 
+<h3>Windows Users:</h3>
+Note: This is not for the feint of heart, as you may encounter one or two (or seven) errors along the way. <br/>
+<ol>
+<li>Install VirtualBox: <a href="http://download.virtualbox.org/virtualbox/4.2.12/VirtualBox-4.2.12-84980-Win.exe">VirtualBox-4.2.12.dmg</a> No other version will work!<br/></li>
+<li>Install ruby: <a href="http://rubyforge.org/frs/download.php/76956/rubyinstaller-2.0.0-p195-x64.exe">Ruby 2.0.0</a> and select 'add ruby binaries to PATH.</li>
+<li>Install Vagrant: <a href="http://files.vagrantup.com/packages/7e400d00a3c5a0fdf2809c8b5001a035415a607b/Vagrant_1.2.2.msi">Vagrant</a><br/></li>
+<li>Install <a href="http://files.vagrantup.com/packages/7e400d00a3c5a0fdf2809c8b5001a035415a607b/Vagrant-1.2.2.dmg">Vagrant-1.2.2.dmg</a><br/></li>
+<li>Install MinGW, checking all boxes during installation: <a href="http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/mingw-get-inst-20120426/mingw-get-inst-20120426.exe/download">MinGW</a></li>
+<li>Install git for Windows: <a href="https://code.google.com/p/msysgit/downloads/detail?name=Git-1.8.3-preview20130601.exe&can=1&q=full+installer+official+git">Git</a></li>
+<li>Clone my repo:
+<code>git clone https://github.com/jedmunds/vagrant.git</code>
+<li>cd into my repo directory</li>
+<code>cd vagrant</code>
+<li>Install vagrant-aws plugin:<br/>
+<code>vagrant plugin install vagrant-aws</code></li>
+<li>Edit the shelters.yaml file to include your local paths rather than mine.<br/></li>
+<li>Run vagrant up environment, where environment is a name in the shelters.yaml file or a custom VM name. For instance:<br/>
+<code>vagrant up confluence</code><br/></li>
+<li>If you want to bring up machines with AWS, append --provider=aws to your 'vagrant someCommand someEnvironment' commands, and it should just 'work'.<br/>
+<code>vagrant up confluence --provider=aws</code><br/></li>
+</ol>
+
 <h2>FAQ</h2>
 
 <strong>Will the Vagrantfile work by itself?</strong>
