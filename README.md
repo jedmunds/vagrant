@@ -43,8 +43,8 @@ instructions below.<br/>
 <h3>Windows Users:</h3>
 Note: This is not for the feint of heart, as you may encounter one or two (or seven) errors along the way. <br/>
 <ol>
-<li>Install VirtualBox: <a href="http://download.virtualbox.org/virtualbox/4.2.12/VirtualBox-4.2.12-84980-Win.exe">VirtualBox-4.2.12.dmg</a> No other version will work!<br/></li>
-<li>Install ruby: <a href="http://rubyforge.org/frs/download.php/76956/rubyinstaller-2.0.0-p195-x64.exe">Ruby 2.0.0</a> and select 'add ruby binaries to PATH.</li>
+<li>Install VirtualBox: <a href="http://download.virtualbox.org/virtualbox/4.2.12/VirtualBox-4.2.12-84980-Win.exe">VirtualBox-4.2.12.exe</a> No other version will work!<br/></li>
+<li>Install ruby: <a href="http://rubyforge.org/frs/download.php/76956/rubyinstaller-2.0.0-p195-x64.exe">Ruby 2.0.0 (x64)</a> and select 'add ruby binaries to PATH.</li>
 <li>Install Vagrant: <a href="http://files.vagrantup.com/packages/7e400d00a3c5a0fdf2809c8b5001a035415a607b/Vagrant_1.2.2.msi">Vagrant for Windows</a><br/></li>
 <li>Install MinGW, checking all boxes during installation: <a href="http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/mingw-get-inst-20120426/mingw-get-inst-20120426.exe/download">MinGW Linux Commands</a></li>
 <li>Install git for Windows: <a href="https://code.google.com/p/msysgit/downloads/detail?name=Git-1.8.3-preview20130601.exe&can=1&q=full+installer+official+git">Git for Windows</a></li>
@@ -61,6 +61,16 @@ Note: This is not for the feint of heart, as you may encounter one or two (or se
 <code>vagrant up confluence --provider=aws</code><br/></li>
 </ol>
 <h4>Windows Debugging</h4>
+<h5>'Vagrant up' yields an error, and won't get very far at all.</h5>
+<p>This is probably due to a bad virtualbox version, did you install the SPECIFIC version vagrant needs? 4.2.12</p>
+<h5>'It looks like it's working, but it hangs for a long time at "Waiting for VM to boot. This can take a few minutes. . ."</h5>
+<p>Shake your first at windows for having such a crappy system clock, and fix yours.<br/>
+Control Panel > System > Date and Time > Internet Time > Change Settings > srbsldc > Update now.<br/>
+This could also be because you don't have the proper private key for your vagrant machine, in which case you will<br/>
+need to Ctrl-C and then manually run 'vagrant ssh'</p>
+<h5>Vagrant tells me I don't have an ssh client installed! Help!</h5>
+<p>99% chance this is because you changed the install directory of MinGW. If you changed it to something other than C:\MinGW\, probably C:\Program Files\MinGW, you will have to manually add the binaries in there to your Windows path. I strongly recommend you uninstall it and reinstall it in C:\MinGW\ If that is not the issue, try to use the 'ssh' command from cmd.exe. If that does not work, you did something horribly wrong with the MinGW installation.</p>
+
 
 <h2>FAQ</h2>
 
