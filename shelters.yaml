@@ -1,34 +1,208 @@
 ---
 environ:
 - global_defaults:
-  - aws_access_key_id:      "ACCESS KEY"
-  - aws_ami:                "ami-5344d263"
-  - aws_instance_type:      "t1.micro"
-  - aws_keypair_name:       "vagrant-keypair"
-  - aws_private_key_path:   "/Users/jordanedmunds/Downloads/keys/vagrant-keypair.pem"
-  - aws_region:             "us-west-2"
-  - aws_secret_access_key:  "SECRET ACCESS KEY"
-  - aws_security_groups:    "vagrant"
-  - aws_username:           "ec2-user"
-  - box:                    "centos6-64-puppet"
-  - box_url:                "http://srsdcllhttp01/basebox/centos6-64-puppet.box"
-  - ip_network:             "10.99.0."
-  - hostname:               "vagrant-puppet-"
-  - hostname_network:       ".pv.com"
-  - provisioner:            "puppet"
-  - manifests_path:         "/Users/jordanedmunds/dev/manifests/"
-  - manifests_file:         "vagrant.pp"
-  - module_path:            "/Users/jordanedmunds/dev/modules/"
-  - network_type:           "private_network"
-  - private_key_path:       "/Users/jordanedmunds/dev/vagrantpriv"
-  - sync_folder_host:       "/Users/jordanedmunds/dev/"
-  - sync_folder_guest:      "/home/vagrant/puppet_bootstrap/"
-- masters:
+  - aws_access_key_id: YOURACCESSKEY
+  - aws_ami: YOURAMINAME
+  - aws_instance_type: t1.micro
+  - aws_keypair_name: YOURKEYPAIRNAME
+  - aws_private_key_path: YOURPRIVATEKEYPATH
+  - aws_region: us-west-2
+  - aws_secret_access_key: YOURSECRETACCESSKEY
+  - aws_security_groups: YOURSECURITYGROUPS
+  - aws_username: ec2-user
+  - box: centos6-64-puppet
+  - box_url: http://srsdcllhttp01/basebox/centos6-64-puppet.box
+  - ip_network: 10.99.0.
+  - hostname: vagrant-puppet-
+  - hostname_network: .yournetwork.com
+  - provisioner: puppet
+  - manifests_path: ./manifests/
+  - manifests_file: vagrant.pp
+  - module_path: ./modules/
+  - network_type: private_network
+  - private_key_path: ./vagrantpriv
+  - sync_folder_host: ./
+  - sync_folder_guest: /home/vagrant/puppet_bootstrap/
+- shelters:
+  - example:
+    - example-box:
+      - ip: '233'
+      - box: precise64
+      - box_url: http://files.vagrantup.com/precise64.box
+      - ip_network: vagrant-network-
+      - module_path: /Users/Jordan/edmunds_dev/modules/
+  - testing_boxes:
+    - ubuntu:
+      - ip: '198'
+      - box: precise64
+      - box_url: http://files.vagrantup.com/precise64.box
+    - precise32:
+      - ip: '199'
+      - box: precise32
+      - box_url: http://files.vagrantup.com/precise32.box
+    - precise64:
+      - ip: '200'
+      - box: precise64
+      - box_url: http://files.vagrantup.com/precise64.box
+    - omnios:
+      - ip: '201'
+      - box: omnios
+      - box_url: http://omnios.omniti.com/media/OmniOS_r151006c-r1.box
+    - fedora64:
+      - ip: '202'
+      - box: fedora64
+      - box_url: http://puppet-vagrant-boxes.puppetlabs.com/fedora-18-x64-vbox4210.box
+    - arch64:
+      - ip: '203'
+      - box: arch64
+      - box_url: http://vagrant.pouss.in/archlinux_2012-07-02.box
+    - squeeze32:
+      - ip: '204'
+      - box: squeeze32
+      - box_url: http://mathie-vagrant-boxes.s3.amazonaws.com/debian_squeeze_32.box
+    - squeeze64:
+      - ip: '205'
+      - box: squeeze64
+      - box_url: http://www.emken.biz/vagrant-boxes/debsqueeze64.box
+    - freebsd:
+      - ip: '206'
+      - box: freebsd
+      - box_url: https://s3.amazonaws.com/vagrant_boxen/freebsd_amd64_zfs.box
+    - opensuse:
+      - ip: '207'
+      - box: opensuse
+      - box_url: https://github.com/jtperry/OpenSuseVagrantBox.box
+    - win2008:
+      - ip: '208'
+      - box: win2008
+      - box_url: http://dl.dropbox.com/u/58604/vagrant/win2k8r2.box
   - master:
-    - ip:          "20"
-- adora_centos:
-  - oracle:
-    - ip:         "12"
-- confluence:
-  - wiki:
-    - ip:         "14"
+    - master:
+      - ip: '20'
+  - adora_centos:
+    - c664-oracle:
+      - ip: '12'
+      - box: precise32
+      - box_url: http://files.vagrantup.com/precise32.box
+    - c664-dbclient:
+      - ip: '13'
+    - c664-delivery:
+      - ip: '14'
+    - c664-acs:
+      - ip: '15'
+    - c664-adora:
+      - ip: '16'
+    - c664-adora_files:
+      - ip: '17'
+    - c664-ams:
+      - ip: '18'
+    - c664-cms:
+      - ip: '19'
+    - c664-thermal:
+      - ip: '20'
+    - c664-dbsync:
+      - ip: '21'
+    - c664-mdsuite:
+      - ip: '22'
+  - artifactory:
+    - artifactory0:
+      - ip: '25'
+    - nginx0:
+      - ip: '26'
+  - atlassian_centos:
+    - c664-wiki:
+      - ip: '29'
+    - c664-jira:
+      - ip: '30'
+    - c664-stash:
+      - ip: '31'
+    - c664-bamboo:
+      - ip: '32'
+  - base_box_bootstrap:
+    - app1:
+      - ip: '35'
+  - bastion:
+    - bastion0:
+      - ip: '38'
+  - centos_clients:
+    - c564-app1:
+      - ip: '41'
+    - c664-app1:
+      - ip: '42'
+  - confluence_centos:
+    - c664-wiki:
+      - ip: '45'
+  - jira_centos:
+    - c664-jira:
+      - ip: '48'
+  - jira_legacy_centos:
+    - c664-jira-legacy:
+      - ip: '51'
+  - jira_upgrade:
+    - c664-jira-legacy:
+      - ip: '54'
+    - c664-jira:
+      - ip: '55'
+    - c664-jira2:
+      - ip: '56'
+  - logstash:
+    - logstash0:
+      - ip: '59'
+    - elasticsearch0:
+      - ip: '60'
+  - mac:
+    - app1:
+      - ip: '63'
+    - snowmac:
+      - ip: '64'
+  - mediafusion_centos:
+    - c664-twonky-mf-dev:
+      - ip: '67'
+  - mfindex_centos:
+    - c664-mfindex:
+      - ip: '70'
+  - opennms_centos:
+    - c664-onms:
+      - ip: '73'
+  - openswan:
+    - vpn0:
+      - ip: '76'
+    - vpn1:
+      - ip: '77'
+  - oracle_centos:
+    - c664-oracle:
+      - ip: '80'
+    - c664-dbclient:
+      - ip: '81'
+  - pcs_centos:
+    - c664-pcs-web:
+      - ip: '84'
+    - c664-pcs-assets:
+      - ip: '85'
+    - c664-pcs-db:
+      - ip: '86'
+  - puppet_build_node:
+    - app1:
+      - ip: '89'
+  - puppet_infrastructure:
+    - nfs:
+      - ip: '92'
+    - ca:
+      - ip: '93'
+    - dashboard:
+      - ip: '94'
+    - app1:
+      - ip: '95'
+  - riemann:
+    - riemann0:
+      - ip: '98'
+  - tts:
+    - tts0:
+      - ip: '101'
+    - logstash0:
+      - ip: '102'
+- dependencies: 
+WORKING:
+  swag:
+    provider: virtualbox
+    ip: '8'
