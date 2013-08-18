@@ -11,7 +11,7 @@ environ:
   - aws_security_groups: YOURSECURITYGROUPS
   - aws_username: ec2-user
   - box: centos6-64-puppet
-  - box_url: http://srsdcllhttp01/basebox/centos6-64-puppet.box
+  - box_url: YOURDEFAULTBOX
   - ip_network: 10.99.0.
   - hostname: vagrant-puppet-
   - hostname_network: .yournetwork.com
