@@ -23,9 +23,9 @@ instructions below.<br/>
 <li>Install RVM for installing Ruby (backslash included):<br/>
 <code>\curl -L https://get.rvm.io | bash</code><br/></li>
 <li>Configure RVM for use:<br/>
-<code>source ~/.rvm/scripts/ram</code><br/></li>
+<code>source ~/.rvm/scripts/rvm</code><br/></li>
 <li>Install ruby:<br/>
-<code>rvm install ruby</code><br/></li>
+<code>rvm install 1.9.3</code><br/></li>
 <li>Install <a href="http://files.vagrantup.com/packages/7e400d00a3c5a0fdf2809c8b5001a035415a607b/Vagrant-1.2.2.dmg">Vagrant-1.2.2.dmg</a><br/></li>
 <li>Install vagrant-aws plugin:<br/>
 <code>vagrant plugin install vagrant-aws</code><br/></li>
